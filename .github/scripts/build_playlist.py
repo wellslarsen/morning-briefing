@@ -8,8 +8,13 @@ PLAYLIST_ID = os.environ["SPOTIFY_PLAYLIST_ID"]
 
 # Use stable show IDs in the exact order you want
 SHOWS = [
+    ("5ylaiuoDj7YOVSdyVJMDR7", "Cyber Security Headlines CISO Series"),
     ("4orGHEysjCAWvGEbHzeL9A", "SANS Internet Stormcenter's Daily"),
-    ("44BcTpDWnfhcn02ADzs7iB", "WSJ What’s News"),
+    ("44BcTpDWnfhcn02ADzs7iB", "WSJ Minute Breifing"),
+    ("59176gU8vcFho6Sc1dm3Lu", "WSJ What’s News"),
+    ("51MrXc7hJQBE2WJf2g4aWN", "WSJ Tech News Briefing"),
+    ("1alpjXkCUjn3Y9fR5xl8fZ", "Reuters World News"),
+    ("0pymDUChxmrkH41tOT33Uc", "The Headlines The New York Times"),
     ("1xGSLDgVYxLybmXpui6wwo", "CNN 5 Things"),
     ("6BRSvIBNQnB68GuoXJRCnQ", "NPR News Now"),
 ]
