@@ -6,7 +6,7 @@ jobs:
 
       - run: |
           echo "PWD = $(pwd)"
-          echo "Tree:"
+          echo "Tree (root):"
           ls -la
           echo "Tree .github:"
           ls -la .github || true
@@ -23,11 +23,12 @@ jobs:
         run: pip install -r .github/scripts/requirements.txt
 
       - name: Show first lines of script
-        run: sed -n '1,120p' .github/scripts/build_playlist.py
+        run: sed -n '1,140p' .github/scripts/build_playlist.py
 
       - name: Echo env names (not values)
         run: |
-          env | grep -E 'SPOTIFY_(CLIENT_ID|PLAYLIST_ID|REFRESH_TOKEN|CLIENT_SECRET)' | sed 's/=.*/=<hidden>/' || true
+          env | grep -E '^SPOTIFY_(CLIENT_ID|CLIENT_SECRET|REFRESH_TOKEN|PLAYLIST_ID)=' \
+          | sed 's/=.*/=<hidden>/' || true
 
       - name: Run builder (unbuffered)
         env:
