@@ -1,7 +1,9 @@
-name: Build Morning Briefing (manual)
+name: Build Morning Briefing (manual + daily)
 
 on:
-  workflow_dispatch: {}    # manual runs only (no push, no schedule)
+  workflow_dispatch: {}
+   schedule:
+    - cron: "10 12 * * *"  # 12:10 UTC = 6:10 AM CST / 7:10 AM CDT
 
 permissions:
   contents: read
