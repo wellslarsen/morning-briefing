@@ -6,13 +6,12 @@ CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
 REFRESH = os.environ["SPOTIFY_REFRESH_TOKEN"]
 PLAYLIST_ID = os.environ["SPOTIFY_PLAYLIST_ID"]
 
-# Edit this list to your preferred order.
-SHOW_QUERIES = [
-    "WSJ What’s News",
-    "CNN 5 Things",
-    "NPR Up First",
-    "BBC Global News Podcast",
-    "Marketplace Morning Report",
+# Use stable show IDs in the exact order you want
+SHOWS = [
+    ("4orGHEysjCAWvGEbHzeL9A", "SANS Internet Stormcenter's Daily"),
+    ("44BcTpDWnfhcn02ADzs7iB", "WSJ What’s News"),
+    ("1xGSLDgVYxLybmXpui6wwo", "CNN 5 Things"),
+    ("6BRSvIBNQnB68GuoXJRCnQ", "NPR News Now"),
 ]
 
 TZ = "America/Chicago"
@@ -39,16 +38,6 @@ def api_get(url, params=None, retries=3):
             continue
         r.raise_for_status()
         return r
-
-def resolve_show(query):
-    url = "https://api.spotify.com/v1/search"
-    params = {"q": query, "type": "show", "market": "US", "limit": 1}
-    r = api_get(url, params=params)
-    items = r.json().get("shows", {}).get("items", [])
-    if not items:
-        raise RuntimeError(f"Could not resolve show for query: {query}")
-    show = items[0]
-    return {"id": show["id"], "name": show["name"], "publisher": show.get("publisher", "")}
 
 def latest_episode(show_id, only_today=True):
     url = f"https://api.spotify.com/v1/shows/{show_id}/episodes"
@@ -78,39 +67,4 @@ def replace_playlist(uris):
 
 def main():
     access = get_access_token_from_refresh()
-    SESSION.headers["Authorization"] = f"Bearer {access}"
-
-    # Resolve shows
-    resolved = [resolve_show(q) for q in SHOW_QUERIES]
-    print("Resolved shows (in order):")
-    for s in resolved:
-        print(f"- {s['name']} ({s['publisher']}) -> {s['id']}")
-
-    # Collect URIs (prefer today's)
-    chosen = []
-    for s in resolved:
-        ep = latest_episode(s["id"], only_today=True)
-        if ep:
-            chosen.append(ep)
-
-    # Fallback if none published today: take newest for each
-    if not chosen:
-        for s in resolved:
-            ep = latest_episode(s["id"], only_today=False)
-            if ep:
-                chosen.append(ep)
-
-    if not chosen:
-        print("No episodes found; aborting.", file=sys.stderr)
-        sys.exit(1)
-
-    # Log lineup for validation
-    print("\nLineup to write to playlist:")
-    for i, ep in enumerate(chosen, 1):
-        print(f"{i}. {ep['name']}  |  released: {ep.get('release_date')}  |  uri: {ep['uri']}")
-
-    replace_playlist([ep["uri"] for ep in chosen])
-    print(f"\nUpdated playlist {PLAYLIST_ID} with {len(chosen)} episode(s).")
-
-if __name__ == "__main__":
-    main()
+    SESSION
