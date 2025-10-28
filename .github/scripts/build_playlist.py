@@ -67,4 +67,53 @@ def replace_playlist(uris):
 
 def main():
     access = get_access_token_from_refresh()
-    SESSION
+    SESSION.headers["Authorization"] = f"Bearer {access}"
+
+    # Who am I / who owns the target playlist?
+    me = api_get("https://api.spotify.com/v1/me").json()
+    pl = api_get(f"https://api.spotify.com/v1/playlists/{PLAYLIST_ID}").json()
+    print(f"Acting as: {me.get('id')} ({me.get('display_name')})  |  "
+          f"Playlist owner: {pl.get('owner', {}).get('id')}  |  "
+          f"Playlist name: {pl.get('name')}")
+
+    # Resolve shows (IDs already known); fetch names for accurate logging
+    resolved = []
+    for sid, display in SHOWS:
+        info = api_get(f"https://api.spotify.com/v1/shows/{sid}", params={"market": "US"}).json()
+        resolved.append({
+            "id": sid,
+            "name": info.get("name", display),
+            "publisher": info.get("publisher", ""),
+        })
+
+    print("Resolved shows (in order):")
+    for s in resolved:
+        print(f"- {s['name']} ({s['publisher']}) -> {s['id']}")
+
+    # Collect episode URIs (prefer today's releases)
+    chosen = []
+    for s in resolved:
+        ep = latest_episode(s["id"], only_today=True)
+        if ep:
+            chosen.append(ep)
+
+    # Fallback: if none published today, take newest so the playlist isn't empty
+    if not chosen:
+        for s in resolved:
+            ep = latest_episode(s["id"], only_today=False)
+            if ep:
+                chosen.append(ep)
+
+    if not chosen:
+        print("No episodes found; aborting.", file=sys.stderr)
+        sys.exit(1)
+
+    print("\nLineup to write to playlist:")
+    for i, ep in enumerate(chosen, 1):
+        print(f"{i}. {ep['name']}  |  released: {ep.get('release_date')}  |  uri: {ep['uri']}")
+
+    replace_playlist([ep["uri"] for ep in chosen])
+    print(f"\nUpdated playlist {PLAYLIST_ID} with {len(chosen)} episode(s).")
+
+if __name__ == "__main__":
+    main()
