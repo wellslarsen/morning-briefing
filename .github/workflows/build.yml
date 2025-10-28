@@ -1,25 +1,33 @@
-name: Build Morning Briefing
+name: Build Morning Briefing (manual)
 on:
-  schedule:
-    # GitHub cron is UTC. Adjust to your preferred morning time.
-    # 12:10 UTC = 6:10 AM Central Standard, 7:10 AM Central Daylight.
-    - cron: "10 12 * * *"
   workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: morning-briefing
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "requirements.txt"
+
       - name: Install deps
-        run: pip install requests
+        run: pip install -r requirements.txt
+
       - name: Run builder
         env:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
           SPOTIFY_PLAYLIST_ID: ${{ secrets.SPOTIFY_PLAYLIST_ID }}
-        run: python .github/scripts/build_playlist.py
+        run: python scripts/build_playlist.py
