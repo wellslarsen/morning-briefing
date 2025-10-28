@@ -1,10 +1,19 @@
+name: Build Morning Briefing (manual)
+
+on:
+  workflow_dispatch: {}    # manual runs only (no push, no schedule)
+
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - run: |
+      - name: Show workspace tree
+        run: |
           echo "PWD = $(pwd)"
           echo "Tree (root):"
           ls -la
