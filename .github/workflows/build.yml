@@ -3,7 +3,7 @@ name: Build Morning Briefing (manual + daily)
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: "10 12 * * *"  # 12:10 UTC = 6:10 AM CST / 7:10 AM CDT
+    - cron: "10 11 * * *"  # 11:10 UTC = 5:10 AM CST / 6:10 AM CDT
 
 permissions:
   contents: read
