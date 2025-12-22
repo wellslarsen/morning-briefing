@@ -6,7 +6,7 @@ CLIENT_SECRET = os.environ["SPOTIFY_CLIENT_SECRET"]
 REFRESH = os.environ["SPOTIFY_REFRESH_TOKEN"]
 PLAYLIST_ID = os.environ["SPOTIFY_PLAYLIST_ID"]
 
-# Use stable show IDs in the exact order you want.
+# Use stable show IDs in the exact order you want
 SHOWS = [
     ("5ylaiuoDj7YOVSdyVJMDR7", "Cyber Security Headlines CISO Series"),
     ("4orGHEysjCAWvGEbHzeL9A", "SANS Internet Stormcenter's Daily"),
